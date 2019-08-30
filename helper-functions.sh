@@ -18,8 +18,14 @@ function sortHistory {
 }
 
 function searchHistory {
+  cmd='cat ~/Documents/sortedHistory_awk.txt '
+  baseSearch=' | grep -i '
   sortHistory
-  grep -i $1 ~/Documents/sortedHistory_awk.txt
+  for var in "$@"
+  do
+    cmd="$cmd$baseSearch$var" 
+  done
+  eval $cmd
 }
 
 function showHistory {
