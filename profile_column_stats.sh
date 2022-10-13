@@ -1,12 +1,12 @@
 #! /bin/bash
 
 echo "Getting the full list of columns"
-~/Documents/binary/clickhouse/clickhouse client --host expanse.localdomain --port 9002 --query "SELECT t.database, t.table, t.name, t.type FROM system.columns t WHERE t.database = 'public' AND t.table = 'onion_logs_v2' ORDER BY t.type, t.name FORMAT CSVWithNames;" > v2_onion_log_schema_full.csv
+~/Documents/binary/clickhouse/clickhouse client --host ${HOST_NAME} --port ${PORT} --query "SELECT t.database, t.table, t.name, t.type FROM system.columns t WHERE t.database = 'public' AND t.table = 'onion_logs_v2' ORDER BY t.type, t.name FORMAT CSVWithNames;" > v2_onion_log_schema_full.csv
 echo "Dropping the existing stats table (data_profiling.column_statistics) if present"
-~/Documents/binary/clickhouse/clickhouse client --host expanse.localdomain --port 9002 --query 'DROP TABLE  IF EXISTS data_profiling.column_statistics'
+~/Documents/binary/clickhouse/clickhouse client --host ${HOST_NAME} --port ${PORT} --query 'DROP TABLE  IF EXISTS data_profiling.column_statistics'
 
 echo "Creating an empty table for stats (data_profiling.column_statistics)"
-~/Documents/binary/clickhouse/clickhouse client --host expanse.localdomain --port 9002 --query='CREATE TABLE data_profiling.column_statistics ( `column_name` String, `event_dataset` Nullable(String), `count_distinct_values` UInt64, `count_not_null` UInt64, `count_of_values` UInt64, `count_of_null` Int64, `percent_null` Float64, `percent_not_null` Float64, `percent_unique` Nullable(Float64) ) ENGINE = MergeTree ORDER BY tuple() SETTINGS index_granularity = 8192;'
+~/Documents/binary/clickhouse/clickhouse client --host ${HOST_NAME} --port ${PORT} --query='CREATE TABLE data_profiling.column_statistics ( `column_name` String, `event_dataset` Nullable(String), `count_distinct_values` UInt64, `count_not_null` UInt64, `count_of_values` UInt64, `count_of_null` Int64, `percent_null` Float64, `percent_not_null` Float64, `percent_unique` Nullable(Float64) ) ENGINE = MergeTree ORDER BY tuple() SETTINGS index_granularity = 8192;'
 
 printf "\n\n**************************************** Calculating Column Stats ****************************************\n\n"
 while IFS="," read -r database_col table_col col_name data_type
