@@ -16,7 +16,7 @@ do
   COL=$(eval echo $col_name) 
   DTYPE=$(eval echo $data_type) 
   echo "Database: ${DB}    Table: ${TBL}    Data Type: ${DTYPE}     Column: ${COL}"
-  ~/Documents/binary/clickhouse/clickhouse client --host expanse.localdomain --port 9002 --query="INSERT INTO data_profiling.column_statistics SELECT '${COL}' AS column_name, event_dataset, COUNT(DISTINCT ${col_name}) AS count_distinct_values, COUNT(${col_name}) AS count_not_null, count(*) AS count_of_values, (count_of_values - count_not_null) AS count_of_null, (count_of_null   / count_of_values * 100.0 ) AS percent_null, (count_not_null  / count_of_values * 100.0 ) AS percent_not_null, CASE WHEN count_not_null = 0 THEN NULL ELSE (count_distinct_values / count_not_null  * 100.0 ) END AS percent_unique FROM public.onion_logs_v2 GROUP BY column_name, event_dataset ORDER BY column_name, event_dataset;"
+  ~/Documents/binary/clickhouse/clickhouse client --host ${HOST_NAME} --port ${PORT} --query="INSERT INTO data_profiling.column_statistics SELECT '${COL}' AS column_name, event_dataset, COUNT(DISTINCT ${col_name}) AS count_distinct_values, COUNT(${col_name}) AS count_not_null, count(*) AS count_of_values, (count_of_values - count_not_null) AS count_of_null, (count_of_null   / count_of_values * 100.0 ) AS percent_null, (count_not_null  / count_of_values * 100.0 ) AS percent_not_null, CASE WHEN count_not_null = 0 THEN NULL ELSE (count_distinct_values / count_not_null  * 100.0 ) END AS percent_unique FROM public.onion_logs_v2 GROUP BY column_name, event_dataset ORDER BY column_name, event_dataset;"
   #break 
 done < <(tail -n +2 v2_onion_log_schema_full.csv)
 
